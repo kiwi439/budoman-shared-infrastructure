@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  kafka-zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    container_name: kafka-zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - budoman-backend
+      - budoman-monitoring-system
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    depends_on:
+      - kafka-zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: kafka-zookeeper:2181
+    networks:
+      - budoman-backend
+      - budoman-monitoring-system
+networks:
+  budoman-backend:
+    external:
+      name: budoman-backend_budoman-backend
+  budoman-monitoring-system:
+    external:
+      name: budoman-monitoring-system_budoman-monitoring-system
